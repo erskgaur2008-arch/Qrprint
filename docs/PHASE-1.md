@@ -7,3 +7,7 @@
 - Dashboard route
 - Multi-tenant schema foundation
 - Dedicated School CRM Supabase project still required before production data/RLS is connected.
+
+
+## Exam module
+- Live exam creation and subject scheduling are deployed from the `main` branch.
