@@ -94,6 +94,7 @@ export default async function DashboardPage() {
     attendanceTotal > 0 ? (attendancePresent / attendanceTotal) * 100 : 0;
 
   const activities = (activityResult.data ?? []).map((item) => ({
+    id: item.id,
     title: item.action.replaceAll("_", " "),
     detail: item.table_name ?? "School activity",
     time: new Date(item.created_at).toLocaleString("en-IN", {
