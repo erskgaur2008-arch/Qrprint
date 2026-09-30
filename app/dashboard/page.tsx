@@ -5,6 +5,14 @@ function formatPercent(value: number) {
   return `${value.toFixed(1)}%`;
 }
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
@@ -55,6 +63,8 @@ export default async function DashboardPage() {
     studentsResult,
     staffResult,
     attendanceResult,
+    feeResult,
+    paymentResult,
     activityResult,
   ] = await Promise.all([
     supabase
@@ -78,6 +88,15 @@ export default async function DashboardPage() {
       .eq("school_id", schoolId)
       .eq("attendance_date", today),
     supabase
+      .from("student_fees")
+      .select("id, amount, discount, status")
+      .eq("school_id", schoolId)
+      .in("status", ["pending", "partial", "overdue"]),
+    supabase
+      .from("payments")
+      .select("student_fee_id, amount")
+      .eq("school_id", schoolId),
+    supabase
       .from("audit_logs")
       .select("id, action, table_name, created_at, metadata")
       .eq("school_id", schoolId)
@@ -92,6 +111,20 @@ export default async function DashboardPage() {
   ).length;
   const attendancePercent =
     attendanceTotal > 0 ? (attendancePresent / attendanceTotal) * 100 : 0;
+
+  const paidByFee = new Map<string, number>();
+  for (const payment of paymentResult.data ?? []) {
+    paidByFee.set(
+      payment.student_fee_id,
+      (paidByFee.get(payment.student_fee_id) ?? 0) + Number(payment.amount),
+    );
+  }
+
+  const pendingFees = (feeResult.data ?? []).reduce((total, fee) => {
+    const netAmount = Number(fee.amount) - Number(fee.discount);
+    const paid = paidByFee.get(fee.id) ?? 0;
+    return total + Math.max(0, netAmount - paid);
+  }, 0);
 
   const activities = (activityResult.data ?? []).map((item) => ({
     id: item.id,
@@ -168,7 +201,7 @@ export default async function DashboardPage() {
             </div>
             <div className="card">
               <div className="label">Pending Fees</div>
-              <div className="value">Not configured</div>
+              <div className="value">{formatCurrency(pendingFees)}</div>
             </div>
           </div>
 
