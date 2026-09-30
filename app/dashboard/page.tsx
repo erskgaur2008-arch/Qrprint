@@ -50,8 +50,8 @@ export default async function DashboardPage() {
 
   const nav = [
     ["Dashboard", "/dashboard"], ["Students", "/dashboard/students"], ["Parents", "/dashboard/parents"],
-    ["Teachers & Staff", "/dashboard/staff"], ["Admissions", "#"], ["Attendance", "/dashboard/attendance"], ["Fees", "/dashboard/fees"],
-    ["Academics", "#"], ["Homework", "#"], ["Exams & Results", "#"], ["Notices & Events", "#"], ["Reports", "#"], ["Settings", "#"],
+    ["Teachers & Staff", "/dashboard/staff"], ["Admissions", "/dashboard/admissions"], ["Attendance", "/dashboard/attendance"], ["Fees", "/dashboard/fees"],
+    ["Academics", "/dashboard/academics"], ["Homework", "/dashboard/homework"], ["Exams & Results", "/dashboard/exams"], ["Notices & Events", "/dashboard/notices"], ["Reports", "/dashboard/reports"], ["Settings", "/dashboard/settings"],
   ];
 
   return <div className="shell">
