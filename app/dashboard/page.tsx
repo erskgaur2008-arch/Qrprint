@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -56,7 +57,7 @@ export default async function DashboardPage() {
 
   return <div className="shell">
     <aside className="sidebar"><div className="brand">🎓 SchoolConnect</div><div className="nav">
-      {nav.map(([item, href]) => <a className={item === "Dashboard" ? "active" : ""} href={href} key={item}>{item}</a>)}
+      {nav.map(([item, href]) => <Link className={item === "Dashboard" ? "active" : ""} href={href} key={item}>{item}</Link>)}
     </div></aside>
     <main className="main">
       <header className="top"><strong>{schoolName}</strong><span className="muted">School Admin · {displayName}</span></header>
@@ -70,7 +71,7 @@ export default async function DashboardPage() {
         </div>
         <div className="grid">
           <div className="card"><h2>Recent Activity</h2>{activities.length ? activities.map(activity => <div className="row" key={activity.id}><div><strong>{activity.title}</strong><div className="muted">{activity.detail}</div></div><small className="muted">{activity.time}</small></div>) : <p className="muted">No audit activity has been recorded for this school yet.</p>}</div>
-          <div className="card"><h2>Quick Actions</h2>{[["Add Student","/dashboard/students"],["New Admission","/dashboard/admissions"],["Collect Fee","/dashboard/fees"],["Mark Attendance","/dashboard/attendance"],["Create Notice","/dashboard/notices"]].map(([item,href]) => <a className="row" href={href} key={item}><strong>{item}</strong><span>→</span></a>)}</div>
+          <div className="card"><h2>Quick Actions</h2>{[["Add Student","/dashboard/students"],["New Admission","/dashboard/admissions"],["Collect Fee","/dashboard/fees"],["Mark Attendance","/dashboard/attendance"],["Create Notice","/dashboard/notices"]].map(([item,href]) => <a className="row" href={href} key={item}><strong>{item}</strong><span>→</span></Link>)}</div>
         </div>
         <div className="card" style={{ marginTop: 16 }}><div className="label">Connected school</div><h2>{schoolName}</h2><p className="muted">{schoolResult.data?.city ? schoolResult.data.city + ", " + (schoolResult.data.state ?? "India") : "School location not configured"}</p></div>
       </section>
