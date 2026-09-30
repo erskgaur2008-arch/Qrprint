@@ -23,7 +23,29 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
  const className=(id:string|null)=>classes.find(x=>x.id===id)?.name||"All Classes";
  const sectionName=(id:string|null)=>sections.find(x=>x.id===id)?.name||"All Sections";
  const subjectName=(id:string)=>subjects.find(x=>x.id===id)?.name||"Subject";
- const examStudents=useMemo(()=>activeSchedule?students.filter(s=>(!activeSchedule.class_id||classes.find(c=>c.id===activeSchedule.class_id)?.name===s.class_name)&&(!activeSchedule.section_id||sections.find(sec=>sec.id===activeSchedule.section_id)?.name===s.section)&&["active","admitted","promoted"].includes(s.status)):[],[activeSchedule,students,classes,sections]);
+ const normalize=(v:string|null|undefined)=> (v??"").trim().toLowerCase().replace(/\\s+/g," ");
+ const classMatches=(studentClass:string|null,selectedClass:string|null)=>{
+  if(!selectedClass)return true;
+  const a=normalize(studentClass),b=normalize(selectedClass);
+  if(!a||!b)return false;
+  if(a===b)return true;
+  const strip=(v:string)=>v.replace(/^class\\s+/,"").replace(/^grade\\s+/,"");
+  return strip(a)===strip(b);
+ };
+ const sectionMatches=(studentSection:string|null,selectedSection:string|null)=>{
+  if(!selectedSection)return true;
+  return !!normalize(studentSection)&&normalize(studentSection)===normalize(selectedSection);
+ };
+ const examStudents=useMemo(()=>{
+  if(!activeSchedule)return [];
+  const selectedClassName=classes.find(c=>c.id===activeSchedule.class_id)?.name??null;
+  const selectedSectionName=sections.find(s=>s.id===activeSchedule.section_id)?.name??null;
+  return students
+   .filter(s=>["active","admitted","promoted"].includes(normalize(s.status)))
+   .filter(s=>classMatches(s.class_name,selectedClassName))
+   .filter(s=>sectionMatches(s.section,selectedSectionName))
+   .sort((a,b)=>a.name.localeCompare(b.name));
+ },[activeSchedule,students,classes,sections]);
  const getMark=(studentId:string)=>markList.find(m=>m.exam_schedule_id===selectedSchedule&&m.student_id===studentId);
 
  async function createExam(e:React.FormEvent<HTMLFormElement>){
@@ -92,7 +114,7 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
   </div>}
 
   {tab==="marks"&&<div className="card"><h2>Marks Entry</h2><label>Subject Schedule<select value={selectedSchedule} onChange={e=>setSelectedSchedule(e.target.value)}>{scheduleList.map(s=><option key={s.id} value={s.id}>{(examList.find(e=>e.id===s.exam_id)?.name||"Exam")+" · "+className(s.class_id)+" · "+subjectName(s.subject_id)+" · "+s.exam_date}</option>)}</select></label>
-   {!activeSchedule?<p className="muted">Create a subject schedule first.</p>:<div className="table-wrap"><table><thead><tr><th>Student</th><th>Admission No.</th><th>Marks / {activeSchedule.max_marks}</th><th>Grade</th></tr></thead><tbody>{examStudents.map(s=>{const m=getMark(s.id);return <tr key={s.id}><td>{s.name}</td><td>{s.admission_no||"—"}</td><td><input type="number" min="0" max={Number(activeSchedule.max_marks)} defaultValue={m?.marks??""} onBlur={e=>saveMark(s.id,e.target.value)} placeholder="Enter marks"/></td><td>{m?.grade||"—"}</td></tr>})}</tbody></table></div>}
+   {!activeSchedule?<p className="muted">Create a subject schedule first.</p>:examStudents.length===0?<div className="card" style={{marginTop:16}}><strong>No students found for this class/section.</strong><p className="muted">Schedule: {className(activeSchedule.class_id)}{activeSchedule.section_id?" · "+sectionName(activeSchedule.section_id):""}. Check the students' class and section.</p></div>:<div className="table-wrap"><table><thead><tr><th>Student</th><th>Admission No.</th><th>Marks / {activeSchedule.max_marks}</th><th>Grade</th></tr></thead><tbody>{examStudents.map(s=>{const m=getMark(s.id);return <tr key={s.id}><td>{s.name}</td><td>{s.admission_no||"—"}</td><td><input type="number" min="0" max={Number(activeSchedule.max_marks)} defaultValue={m?.marks??""} onBlur={e=>saveMark(s.id,e.target.value)} placeholder="Enter marks"/></td><td>{m?.grade||"—"}</td></tr>})}</tbody></table></div>}
   </div>}
 
   {tab==="results"&&<div className="card"><div style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap"}}><div><h2>Results & Report Cards</h2><p className="muted">Generate a student summary from entered marks.</p></div><button className="button" onClick={generateResults} disabled={loading||!selectedExam}>{loading?"Generating...":"Generate Results"}</button></div><ResultsTable schoolId={schoolId} examId={selectedExam} students={students} supabase={supabase}/></div>}
