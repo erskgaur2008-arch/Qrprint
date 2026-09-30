@@ -1,0 +1,1 @@
+Reusable UI components for the School CRM. Add shared buttons, cards, tables, forms, dialogs and navigation here.
