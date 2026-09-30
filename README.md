@@ -15,3 +15,6 @@ The original prototype files and master AI prompt are retained in this repositor
 
 ## Deployment
 This repository is configured for deployment on Vercel from the `main` branch.
+
+
+<!-- Vercel deployment trigger -->
