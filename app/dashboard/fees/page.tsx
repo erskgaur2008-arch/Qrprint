@@ -59,7 +59,7 @@ export default async function FeesPage() {
   const { data: students } = studentIds.length
     ? await supabase
         .from("students")
-        .select("id, admission_no, first_name, last_name, class_name, section_name")
+        .select("id, name, admission_no, class_name, section")
         .in("id", studentIds)
     : { data: [] };
 
@@ -67,10 +67,10 @@ export default async function FeesPage() {
     (students ?? []).map((student) => [
       student.id,
       {
-        name: [student.first_name, student.last_name].filter(Boolean).join(" "),
+        name: student.name,
         admissionNo: student.admission_no,
         className: student.class_name,
-        sectionName: student.section_name,
+        sectionName: student.section,
       },
     ]),
   );
