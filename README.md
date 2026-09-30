@@ -12,3 +12,6 @@ npm run dev
 Copy .env.example to .env.local and add Supabase project values.
 
 The original prototype files and master AI prompt are retained in this repository.
+
+## Deployment
+This repository is configured for deployment on Vercel from the `main` branch.
