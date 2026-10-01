@@ -20,6 +20,9 @@ export default async function DashboardPage() {
   if (!membership?.school_id) return <main className="content"><div className="card"><span className="badge">Authenticated</span><h1>School access is not configured</h1><p className="muted">Your account is signed in, but it has not been assigned to a school yet.</p></div></main>;
 
   const schoolId = membership.school_id;
+  const { data: roleRow } = await supabase.from("user_roles").select("role_id").eq("school_id", schoolId).eq("user_id", claims.sub).limit(1).maybeSingle();
+  const { data: role } = roleRow?.role_id ? await supabase.from("roles").select("name").eq("id", roleRow.role_id).maybeSingle() : { data: null };
+  if (role?.name === "teacher" || role?.name === "staff") redirect("/dashboard/teacher");
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 
   const [schoolResult, studentsResult, staffResult, attendanceResult, feeResult, paymentResult, activityResult] = await Promise.all([
