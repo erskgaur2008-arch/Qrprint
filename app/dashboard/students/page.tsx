@@ -23,9 +23,15 @@ export default async function StudentsPage() {
   const { data: school } = await supabase.from("schools").select("name").eq("id", membership.school_id).single();
   const { data: students } = await supabase
     .from("students")
-    .select("id, student_id, admission_no, name, date_of_birth, gender, blood_group, class_name, section, roll_no, admission_date, status")
+    .select("id, student_id, admission_no, name, date_of_birth, gender, blood_group, class_id, section_id, class_name, section, roll_no, admission_date, status")
     .eq("school_id", membership.school_id)
     .order("name");
+  const [{ data: classRows }, { data: sectionRows }] = await Promise.all([
+    supabase.from("classes").select("id,name").eq("school_id", membership.school_id).eq("is_active", true),
+    supabase.from("sections").select("id,name").eq("school_id", membership.school_id).eq("is_active", true)
+  ]);
+  const classMap = new Map((classRows ?? []).map(c => [c.id, c.name]));
+  const sectionMap = new Map((sectionRows ?? []).map(s => [s.id, s.name]));
 
   return (
     <div className="shell">
@@ -67,7 +73,7 @@ export default async function StudentsPage() {
                     <tr key={student.id}>
                       <td><strong>{student.name}</strong><div className="muted">{student.student_id}</div></td>
                       <td>{student.admission_no ?? "—"}</td>
-                      <td>{student.class_name ?? "—"}{student.section ? " · " + student.section : ""}</td>
+                      <td>{(student.class_id ? classMap.get(student.class_id) : null) ?? student.class_name ?? "—"}{(student.section_id ? sectionMap.get(student.section_id) : null) ? " · " + sectionMap.get(student.section_id) : (student.section ? " · " + student.section : "")}</td>
                       <td>{student.roll_no ?? "—"}</td>
                       <td>{student.date_of_birth ?? "—"}</td>
                       <td>{student.gender ?? "—"}</td>
