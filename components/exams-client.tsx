@@ -57,12 +57,24 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
   setLoading(false);
  }
  async function createSchedule(e:React.FormEvent<HTMLFormElement>){
-  e.preventDefault(); if(!selectedExam){setMessage("Select an exam first.");return;} setLoading(true);setMessage("");
-  const f=new FormData(e.currentTarget);
-  const payload={school_id:schoolId,exam_id:selectedExam,class_id:String(f.get("class_id"))||null,section_id:String(f.get("section_id"))||null,subject_id:String(f.get("subject_id")),exam_date:String(f.get("exam_date")),start_time:String(f.get("start_time"))||null,duration_minutes:Number(f.get("duration_minutes")||120),max_marks:Number(f.get("max_marks")||80)};
-  const {data,error}=await supabase.from("exam_schedules").insert(payload).select("id,exam_id,class_id,section_id,subject_id,exam_date,start_time,duration_minutes,max_marks").single();
-  if(error)setMessage(error.message); else if(data){setScheduleList([...scheduleList,data]);setSelectedSchedule(data.id);e.currentTarget.reset();setMessage("Subject schedule added.");}
-  setLoading(false);
+  e.preventDefault();
+  if(!selectedExam){setMessage("Select an exam first.");return;}
+  setLoading(true);setMessage("");
+  const form=e.currentTarget;
+  const f=new FormData(form);
+  const classId=String(f.get("class_id")||"").trim();
+  const sectionId=String(f.get("section_id")||"").trim();
+  const subjectId=String(f.get("subject_id")||"").trim();
+  const examDate=String(f.get("exam_date")||"").trim();
+  const startTime=String(f.get("start_time")||"").trim();
+  if(!classId||!subjectId||!examDate){setMessage("Please select Class, Subject and Exam Date.");setLoading(false);return;}
+  const payload={school_id:schoolId,exam_id:selectedExam,class_id:classId,section_id:sectionId||null,subject_id:subjectId,exam_date:examDate,start_time:startTime||null,duration_minutes:Number(f.get("duration_minutes")||120),max_marks:Number(f.get("max_marks")||80)};
+  try{
+   const {data,error}=await supabase.from("exam_schedules").insert(payload).select("id,exam_id,class_id,section_id,subject_id,exam_date,start_time,duration_minutes,max_marks").single();
+   if(error){setMessage("Could not save schedule: "+error.message);return;}
+   if(data){setScheduleList(prev=>[...prev,data]);setSelectedSchedule(data.id);form.reset();setMessage("Subject schedule added successfully.");}
+  }catch(error){setMessage("Could not save schedule. Please try again.");}
+  finally{setLoading(false);}
  }
  async function saveMark(studentId:string,value:string){
   if(!activeSchedule)return;
