@@ -31,10 +31,23 @@ export default function SettingsClient({schoolId,school,branding,settings}:any){
  const Field=SettingsField;
  async function save(){
   setSaving(true);setMsg("");
-  const {error:e1}=await supabase.from("schools").update({name:profile.name,slug:profile.slug,address:profile.address,city:profile.city,state:profile.state,country:profile.country,phone:profile.phone,email:profile.email}).eq("id",schoolId);
-  const {error:e2}=await supabase.from("school_branding").upsert({school_id:schoolId,logo_url:brand.logo_url||null,favicon_url:brand.favicon_url||null,primary_color:brand.primary_color,secondary_color:brand.secondary_color,accent_color:brand.accent_color});
+  const {error:e1}=await supabase.from("schools").update({
+    name:profile.name,slug:profile.slug,address:profile.address,city:profile.city,
+    state:profile.state,country:profile.country,phone:profile.phone,email:profile.email
+  }).eq("id",schoolId);
+  if(e1){setSaving(false);setMsg("School profile could not be saved: "+e1.message);return;}
+
+  const {error:e2}=await supabase.from("school_branding").upsert({
+    school_id:schoolId,logo_url:brand.logo_url||null,favicon_url:brand.favicon_url||null,
+    primary_color:brand.primary_color,secondary_color:brand.secondary_color,accent_color:brand.accent_color
+  });
+  if(e2){setSaving(false);setMsg("Branding could not be saved: "+e2.message);return;}
+
   const {error:e3}=await supabase.from("school_settings").upsert({...config,school_id:schoolId});
-  setSaving(false); setMsg(e1||e2||e3 ? (e1||e2||e3)!.message : "Settings saved successfully.");
+  if(e3){setSaving(false);setMsg("School settings could not be saved: "+e3.message);return;}
+
+  setSaving(false);setMsg("Settings saved successfully. Refreshing school information...");
+  window.setTimeout(()=>window.location.reload(),500);
  }
  return <div>
   <div className="card"><h2>School Profile</h2><div className="form-grid">
