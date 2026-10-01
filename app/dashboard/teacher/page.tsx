@@ -38,7 +38,7 @@ export default async function TeacherDashboardPage() {
   const cm=new Map((classes??[]).map((x:any)=>[x.id,x.name])), sm=new Map((sections??[]).map((x:any)=>[x.id,x.name])), subm=new Map((subjects??[]).map((x:any)=>[x.id,x.name]));
   const assignmentNames=(assignmentResult.data??[]).map((x:any)=>String(cm.get(x.class_id)??"Class")+" "+String(sm.get(x.section_id)??"")+" · "+String(subm.get(x.subject_id)??"Subject"));
 
-  const nav=[["My Dashboard","/dashboard/teacher"],["My Classes","/dashboard/academics"],["Attendance","/dashboard/attendance"],["Homework","/dashboard/homework"],["Exams & Results","/dashboard/exams"],["Timetable","/dashboard/timetable"],["Leave","/dashboard/leave"],["Communication","/dashboard/communication"]];
+  const nav=[["My Dashboard","/dashboard/teacher"],["My Classes","/dashboard/academics"],["Attendance","/dashboard/teacher/attendance"],["Homework","/dashboard/homework"],["Exams & Results","/dashboard/exams"],["Timetable","/dashboard/timetable"],["Leave","/dashboard/leave"],["Communication","/dashboard/communication"]];
   return <div className="shell">
     <aside className="sidebar"><div className="brand">🎓 SchoolConnect</div><div className="nav">{nav.map(([n,h],i)=><Link className={i===0?"active":""} href={h} key={n}>{n}</Link>)}</div></aside>
     <main className="main"><header className="top"><strong>{schoolResult.data?.name??"School"}</strong><span className="muted">{role.description??role.name} · {membership.display_name??"User"}</span></header>
