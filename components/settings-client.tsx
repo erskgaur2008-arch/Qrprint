@@ -2,13 +2,33 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+type SettingsFieldProps = {
+ label: string;
+ k: string;
+ area?: boolean;
+ source: any;
+ setter: (updater: any) => void;
+};
+
+function SettingsField({label,k,area=false,source,setter}:SettingsFieldProps){
+ const handleFocus=(e:React.FocusEvent<HTMLInputElement|HTMLTextAreaElement>)=>{
+  if(typeof window!=="undefined" && window.innerWidth<=700){
+   const target=e.currentTarget;
+   window.setTimeout(()=>target.scrollIntoView({block:"center",inline:"nearest"}),180);
+  }
+ };
+ return <label className="field"><span>{label}</span>{area?
+  <textarea value={source?.[k]||""} onFocus={handleFocus} onChange={e=>setter((x:any)=>({...x,[k]:e.target.value}))}/>: 
+  <input value={source?.[k]||""} onFocus={handleFocus} onChange={e=>setter((x:any)=>({...x,[k]:e.target.value}))}/>}</label>;
+}
+
 export default function SettingsClient({schoolId,school,branding,settings}:any){
  const supabase=createClient();
  const [profile,setProfile]=useState({...school});
  const [brand,setBrand]=useState({...branding});
  const [config,setConfig]=useState({...settings});
  const [saving,setSaving]=useState(false); const [msg,setMsg]=useState("");
- const Field=({label,k,area=false,source,setter}:any)=><label className="field"><span>{label}</span>{area?<textarea value={source?.[k]||""} onChange={e=>setter((x:any)=>({...x,[k]:e.target.value}))}/>:<input value={source?.[k]||""} onChange={e=>setter((x:any)=>({...x,[k]:e.target.value}))}/>}</label>;
+ const Field=SettingsField;
  async function save(){
   setSaving(true);setMsg("");
   const {error:e1}=await supabase.from("schools").update({name:profile.name,slug:profile.slug,address:profile.address,city:profile.city,state:profile.state,country:profile.country,phone:profile.phone,email:profile.email}).eq("id",schoolId);
