@@ -15,10 +15,10 @@ export default async function Page() {
     supabase.from("schools").select("name").eq("id", schoolId).single(),
     supabase.from("exams").select("id,name,exam_type,start_date,end_date,status").eq("school_id", schoolId).order("start_date", { ascending: false }),
     supabase.from("exam_schedules").select("id,exam_id,class_id,section_id,subject_id,exam_date,start_time,duration_minutes,max_marks").eq("school_id", schoolId).order("exam_date"),
-    supabase.from("classes").select("id,name,display_order").eq("school_id", schoolId).order("display_order"),
-    supabase.from("sections").select("id,class_id,name").eq("school_id", schoolId).order("name"),
+    supabase.from("classes").select("id,name,display_order").eq("school_id", schoolId).eq("is_active", true).order("display_order"),
+    supabase.from("sections").select("id,class_id,name").eq("school_id", schoolId).eq("is_active", true).order("name"),
     supabase.from("subjects").select("id,name,code").eq("school_id", schoolId).order("name"),
-    supabase.from("students").select("id,name,admission_no,class_name,section,status").eq("school_id", schoolId).order("name"),
+    supabase.from("students").select("id,name,admission_no,class_id,section_id,class_name,section,status").eq("school_id", schoolId).order("name"),
     supabase.from("exam_marks").select("id,exam_schedule_id,student_id,marks,grade,remarks").eq("school_id", schoolId)
   ]);
 
