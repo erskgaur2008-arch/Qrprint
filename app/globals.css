@@ -14,3 +14,24 @@
 
 .report-tabs{display:flex;gap:8px;overflow-x:auto;margin:16px 0 12px;padding-bottom:4px}.report-tab{flex:0 0 auto;border:1px solid #d9e0e8;background:#fff;color:#344054;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.report-tab.active{background:#173b63;color:#fff;border-color:#173b63}.report-toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:16px}.report-toolbar label{display:grid;gap:6px;font-size:13px;font-weight:700;color:#344054;min-width:150px}.report-toolbar input,.report-toolbar select{min-height:42px;padding:10px 12px;border:1px solid #d9e0e8;border-radius:10px;background:#fff;color:#172033}.report-actions{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}@media(max-width:700px){.report-toolbar{align-items:stretch}.report-toolbar label{width:100%;min-width:0}.report-actions{width:100%;margin-left:0}.report-actions .button{flex:1}.report-tabs{margin-top:12px}}
 @media print{.sidebar,.top,.report-tabs,.report-toolbar,.badge{display:none!important}.shell,.main,.content{display:block!important}.content{padding:0}.card{box-shadow:none;border:1px solid #ddd}.data-table{min-width:0!important;width:100%}}
+
+/* Public landing + teacher login */
+.landing-page{min-height:100vh;background:linear-gradient(135deg,#f7f9fc 0%,#eef4fb 55%,#fff 100%);display:flex;flex-direction:column}
+.landing-hero{width:min(1180px,100%);margin:auto;padding:28px 24px 50px}
+.landing-brand{font-size:22px;font-weight:800;color:#173b63}
+.landing-content{display:grid;grid-template-columns:1.5fr .8fr;gap:34px;align-items:center;padding:72px 0 50px}
+.landing-copy h1{font-size:clamp(38px,6vw,64px);line-height:1.04;margin:12px 0 18px;max-width:760px;color:#173b63}
+.landing-copy p{font-size:18px;line-height:1.7;color:#667085;max-width:680px;margin:0}
+.landing-kicker{display:inline-block;color:#245ea8;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.landing-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.landing-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:12px;padding:13px 18px;font-weight:800;min-height:46px}
+.landing-button.primary{background:#173b63;color:#fff}
+.landing-button.secondary{background:#fff;color:#173b63;border:1px solid #d9e0e8}
+.landing-card{background:#fff;border:1px solid #dfe6ee;border-radius:22px;padding:30px;box-shadow:0 18px 50px rgba(23,59,99,.10)}
+.landing-icon{font-size:42px}
+.landing-card h2{margin:14px 0 8px;color:#173b63}
+.landing-card p{color:#667085;line-height:1.6}
+.landing-teacher-link{color:#245ea8;font-weight:800;text-decoration:none}
+.teacher-login-badge{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:999px;background:#eef4fb;color:#245ea8;font-size:12px;font-weight:800}
+.back-login-link{color:#245ea8;font-weight:700;text-decoration:none}
+@media(max-width:800px){.landing-content{grid-template-columns:1fr;padding:54px 0 28px}.landing-copy h1{font-size:42px}.landing-card{padding:24px}.landing-hero{padding:22px 16px 34px}.landing-actions{flex-direction:column}.landing-button{width:100%}}
