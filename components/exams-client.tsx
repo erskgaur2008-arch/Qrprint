@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 type Exam = { id:string; name:string; exam_type:string; start_date:string; end_date:string; status:string };
 type Schedule = { id:string; exam_id:string; class_id:string|null; section_id:string|null; subject_id:string; exam_date:string; start_time:string|null; duration_minutes:number; max_marks:number };
 type Item = { id:string; name:string; display_order?:number; class_id?:string; code?:string|null };
-type Student = { id:string; name:string; admission_no:string|null; class_name:string|null; section:string|null; status:string };
+type Student = { id:string; name:string; admission_no:string|null; class_id:string|null; section_id:string|null; class_name:string|null; section:string|null; status:string };
 type Mark = { id:string; exam_schedule_id:string; student_id:string; marks:number; grade:string|null; remarks:string|null };
 
 function gradeFor(p:number){ if(p>=90)return "A+"; if(p>=80)return "A"; if(p>=70)return "B+"; if(p>=60)return "B"; if(p>=50)return "C"; if(p>=40)return "D"; return "F"; }
@@ -15,7 +15,7 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
  const supabase=createClient();
  const [tab,setTab]=useState<"exams"|"schedule"|"marks"|"results">("exams");
  const [examList,setExamList]=useState(exams); const [scheduleList,setScheduleList]=useState(schedules); const [markList,setMarkList]=useState(marks);
- const [selectedExam,setSelectedExam]=useState(exams[0]?.id||""); const [selectedSchedule,setSelectedSchedule]=useState(schedules[0]?.id||"");
+ const [selectedExam,setSelectedExam]=useState(exams[0]?.id||""); const [selectedSchedule,setSelectedSchedule]=useState(schedules[0]?.id||""); const [scheduleClassId,setScheduleClassId]=useState("");
  const [loading,setLoading]=useState(false); const [message,setMessage]=useState("");
 
  const examSchedules=useMemo(()=>scheduleList.filter(x=>x.exam_id===selectedExam),[scheduleList,selectedExam]);
@@ -24,28 +24,14 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
  const sectionName=(id:string|null)=>sections.find(x=>x.id===id)?.name||"All Sections";
  const subjectName=(id:string)=>subjects.find(x=>x.id===id)?.name||"Subject";
  const normalize=(v:string|null|undefined)=> (v??"").trim().toLowerCase().replace(/\\s+/g," ");
- const classMatches=(studentClass:string|null,selectedClass:string|null)=>{
-  if(!selectedClass)return true;
-  const a=normalize(studentClass),b=normalize(selectedClass);
-  if(!a||!b)return false;
-  if(a===b)return true;
-  const strip=(v:string)=>v.replace(/^class\\s+/,"").replace(/^grade\\s+/,"");
-  return strip(a)===strip(b);
- };
- const sectionMatches=(studentSection:string|null,selectedSection:string|null)=>{
-  if(!selectedSection)return true;
-  return !!normalize(studentSection)&&normalize(studentSection)===normalize(selectedSection);
- };
  const examStudents=useMemo(()=>{
   if(!activeSchedule)return [];
-  const selectedClassName=classes.find(c=>c.id===activeSchedule.class_id)?.name??null;
-  const selectedSectionName=sections.find(s=>s.id===activeSchedule.section_id)?.name??null;
   return students
    .filter(s=>["active","admitted","promoted"].includes(normalize(s.status)))
-   .filter(s=>classMatches(s.class_name,selectedClassName))
-   .filter(s=>sectionMatches(s.section,selectedSectionName))
+   .filter(s=>!activeSchedule.class_id || s.class_id===activeSchedule.class_id)
+   .filter(s=>!activeSchedule.section_id || s.section_id===activeSchedule.section_id)
    .sort((a,b)=>a.name.localeCompare(b.name));
- },[activeSchedule,students,classes,sections]);
+ },[activeSchedule,students]);
  const getMark=(studentId:string)=>markList.find(m=>m.exam_schedule_id===selectedSchedule&&m.student_id===studentId);
 
  async function createExam(e:React.FormEvent<HTMLFormElement>){
@@ -72,7 +58,7 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
   try{
    const {data,error}=await supabase.from("exam_schedules").insert(payload).select("id,exam_id,class_id,section_id,subject_id,exam_date,start_time,duration_minutes,max_marks").single();
    if(error){setMessage("Could not save schedule: "+error.message);return;}
-   if(data){setScheduleList(prev=>[...prev,data]);setSelectedSchedule(data.id);form.reset();setMessage("Subject schedule added successfully.");}
+   if(data){setScheduleList(prev=>[...prev,data]);setSelectedSchedule(data.id);form.reset();setScheduleClassId("");setMessage("Subject schedule added successfully.");}
   }catch(error){setMessage("Could not save schedule. Please try again.");}
   finally{setLoading(false);}
  }
@@ -115,8 +101,8 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
   {tab==="schedule"&&<div className="grid two">
    <div className="card"><h2>Add Subject Schedule</h2><label>Exam<select value={selectedExam} onChange={e=>setSelectedExam(e.target.value)}>{examList.map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></label>
    <form onSubmit={createSchedule} className="form-grid">
-    <label>Class<select name="class_id" required><option value="">Select class</option>{classes.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-    <label>Section<select name="section_id"><option value="">All sections</option>{sections.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+    <label>Class<select name="class_id" required value={scheduleClassId} onChange={e=>setScheduleClassId(e.target.value)}><option value="">Select class</option>{classes.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+    <label>Section<select name="section_id" defaultValue=""><option value="">All sections</option>{sections.filter(s=>!scheduleClassId||s.class_id===scheduleClassId).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
     <label>Subject<select name="subject_id" required><option value="">Select subject</option>{subjects.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
     <label>Exam Date<input type="date" name="exam_date" required/></label><label>Start Time<input type="time" name="start_time"/></label>
     <label>Duration (minutes)<input name="duration_minutes" type="number" defaultValue="120" min="15"/></label><label>Maximum Marks<input name="max_marks" type="number" defaultValue="80" min="1"/></label>
