@@ -15,7 +15,7 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
  const supabase=createClient();
  const [tab,setTab]=useState<"exams"|"schedule"|"marks"|"results">("exams");
  const [examList,setExamList]=useState(exams); const [scheduleList,setScheduleList]=useState(schedules); const [markList,setMarkList]=useState(marks);
- const [selectedExam,setSelectedExam]=useState(exams[0]?.id||""); const [selectedSchedule,setSelectedSchedule]=useState(schedules[0]?.id||""); const [scheduleClassId,setScheduleClassId]=useState("");
+ const [selectedExam,setSelectedExam]=useState(exams[0]?.id||""); const [selectedSchedule,setSelectedSchedule]=useState(schedules[0]?.id||""); const [scheduleClassId,setScheduleClassId]=useState(""); const [scheduleSectionId,setScheduleSectionId]=useState("");
  const [loading,setLoading]=useState(false); const [message,setMessage]=useState("");
 
  const examSchedules=useMemo(()=>scheduleList.filter(x=>x.exam_id===selectedExam),[scheduleList,selectedExam]);
@@ -58,7 +58,7 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
   try{
    const {data,error}=await supabase.from("exam_schedules").insert(payload).select("id,exam_id,class_id,section_id,subject_id,exam_date,start_time,duration_minutes,max_marks").single();
    if(error){setMessage("Could not save schedule: "+error.message);return;}
-   if(data){setScheduleList(prev=>[...prev,data]);setSelectedSchedule(data.id);form.reset();setScheduleClassId("");setMessage("Subject schedule added successfully.");}
+   if(data){setScheduleList(prev=>[...prev,data]);setSelectedSchedule(data.id);form.reset();setScheduleClassId("");setScheduleSectionId("");setMessage("Subject schedule added successfully.");}
   }catch(error){setMessage("Could not save schedule. Please try again.");}
   finally{setLoading(false);}
  }
@@ -101,8 +101,8 @@ export default function ExamsClient({schoolId, exams, schedules, classes, sectio
   {tab==="schedule"&&<div className="grid two">
    <div className="card"><h2>Add Subject Schedule</h2><label>Exam<select value={selectedExam} onChange={e=>setSelectedExam(e.target.value)}>{examList.map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></label>
    <form onSubmit={createSchedule} className="form-grid">
-    <label>Class<select name="class_id" required value={scheduleClassId} onChange={e=>setScheduleClassId(e.target.value)}><option value="">Select class</option>{classes.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-    <label>Section<select name="section_id" defaultValue=""><option value="">All sections</option>{sections.filter(s=>!scheduleClassId||s.class_id===scheduleClassId).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+    <label>Class<select name="class_id" required value={scheduleClassId} onChange={e=>{setScheduleClassId(e.target.value);setScheduleSectionId("");}}><option value="">Select class</option>{classes.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+    <label>Section<select name="section_id" required value={scheduleSectionId} onChange={e=>setScheduleSectionId(e.target.value)} disabled={!scheduleClassId}><option value="">{scheduleClassId?"Select section":"Select class first"}</option>{sections.filter(s=>s.class_id===scheduleClassId).filter((s,i,a)=>a.findIndex(x=>x.name.trim().toLowerCase()===s.name.trim().toLowerCase())===i).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
     <label>Subject<select name="subject_id" required><option value="">Select subject</option>{subjects.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
     <label>Exam Date<input type="date" name="exam_date" required/></label><label>Start Time<input type="time" name="start_time"/></label>
     <label>Duration (minutes)<input name="duration_minutes" type="number" defaultValue="120" min="15"/></label><label>Maximum Marks<input name="max_marks" type="number" defaultValue="80" min="1"/></label>
