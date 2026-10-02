@@ -1,97 +1,50 @@
 "use client";
 import {useState} from "react";
 import {createClient} from "@/lib/supabase/client";
-
-type C={id:string;name:string;display_order:number};
-type S={id:string;class_id:string;name:string;capacity:number|null};
-type Sub={id:string;name:string;code:string|null};
-type T={id:string;name:string;employee_no:string|null};
-type A={id:string;staff_id:string;class_id:string;section_id:string|null;subject_id:string};
-
+type C={id:string;name:string;display_order:number}; type S={id:string;class_id:string;name:string;capacity:number|null}; type Sub={id:string;name:string;code:string|null}; type T={id:string;name:string;employee_no:string|null}; type A={id:string;staff_id:string;class_id:string;section_id:string|null;subject_id:string};
 export default function AcademicsClient(p:{schoolId:string;classes:C[];sections:S[];subjects:Sub[];teachers:T[];assignments:A[]}) {
  const [cs,setCs]=useState(p.classes),[ss,setSs]=useState(p.sections),[subs,setSubs]=useState(p.subjects),[as,setAs]=useState(p.assignments),[msg,setMsg]=useState("");
  const [cn,setCn]=useState(""),[sn,setSn]=useState(""),[subn,setSubn]=useState(""),[teacher,setTeacher]=useState(p.teachers[0]?.id||""),[cl,setCl]=useState(p.classes[0]?.id||""),[sec,setSec]=useState(""),[subject,setSubject]=useState(p.subjects[0]?.id||"");
- const db=createClient();
- const nm=(id:string,a:any[])=>a.find(x=>x.id===id)?.name||"—";
-
- async function addClass(){if(!cn.trim())return;const {data,error}=await db.from("classes").insert({school_id:p.schoolId,name:cn.trim(),display_order:cs.length+1}).select("id,name,display_order").single();if(error)setMsg(error.message);else{setCs([...cs,data]);setCn("");setMsg("Class added.");}}
- async function addSection(){if(!sn.trim()||!cl)return;const {data,error}=await db.from("sections").insert({school_id:p.schoolId,class_id:cl,name:sn.trim(),capacity:40}).select("id,class_id,name,capacity").single();if(error)setMsg(error.message);else{setSs([...ss,data]);setSn("");setMsg("Section added.");}}
- async function addSubject(){if(!subn.trim())return;const {data,error}=await db.from("subjects").insert({school_id:p.schoolId,name:subn.trim()}).select("id,name,code").single();if(error)setMsg(error.message);else{setSubs([...subs,data]);setSubn("");setMsg("Subject added.");}}
+ const db=createClient(); const nm=(id:string,a:any[])=>a.find(x=>x.id===id)?.name||"—";
+ async function addClass(){if(!cn)return;const {data,error}=await db.from("classes").insert({school_id:p.schoolId,name:cn,display_order:cs.length+1}).select("id,name,display_order").single();if(error)setMsg(error.message);else{setCs([...cs,data]);setCn("");setMsg("Class added.");}}
+ async function addSection(){if(!sn||!cl)return;const {data,error}=await db.from("sections").insert({school_id:p.schoolId,class_id:cl,name:sn,capacity:40}).select("id,class_id,name,capacity").single();if(error)setMsg(error.message);else{setSs([...ss,data]);setSn("");setMsg("Section added.");}}
+ async function addSubject(){if(!subn)return;const {data,error}=await db.from("subjects").insert({school_id:p.schoolId,name:subn}).select("id,name,code").single();if(error)setMsg(error.message);else{setSubs([...subs,data]);setSubn("");setMsg("Subject added.");}}
  async function addAssignment(){if(!teacher||!cl||!subject)return;const {data,error}=await db.from("teacher_assignments").insert({school_id:p.schoolId,staff_id:teacher,class_id:cl,section_id:sec||null,subject_id:subject}).select("id,staff_id,class_id,section_id,subject_id").single();if(error)setMsg(error.message);else{setAs([...as,data]);setMsg("Teacher assigned.");}}
-
- return <div className="academics-page">
-  {msg&&<div className="success">{msg}</div>}
-
-  <div className="cards academics-summary">
-   {[["Classes",cs.length],["Sections",ss.length],["Subjects",subs.length],["Assignments",as.length]].map(x=>
-    <div className="card" key={String(x[0])}><div className="label">{x[0]}</div><div className="value">{x[1]}</div></div>
-   )}
+ return <div className="academics-page">{msg&&<div className="success">{msg}</div>}
+ <div className="cards academics-stats">{[["Classes",cs.length],["Sections",ss.length],["Subjects",subs.length],["Assignments",as.length]].map(x=><div className="card" key={String(x[0])}><div className="label">{x[0]}</div><div className="value">{x[1]}</div></div>)}</div>
+ <div className="grid academics-main-grid">
+  <div className="card academics-card">
+   <h2>Classes & Sections</h2>
+   <div className="academics-form">
+    <div className="academics-field"><label htmlFor="new-class">New class</label><input id="new-class" placeholder="e.g. Grade IV" value={cn} onChange={e=>setCn(e.target.value)}/></div>
+    <button className="button academics-action" onClick={addClass}>+ Add Class</button>
+   </div>
+   <div className="academics-form academics-section-form">
+    <div className="academics-field"><label htmlFor="section-class">Class</label><select id="section-class" value={cl} onChange={e=>setCl(e.target.value)}>{cs.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+    <div className="academics-field"><label htmlFor="new-section">New section</label><input id="new-section" placeholder="e.g. A" value={sn} onChange={e=>setSn(e.target.value)}/></div>
+    <button className="button academics-action" onClick={addSection}>+ Add Section</button>
+   </div>
+   <div className="table-wrap academics-table-wrap"><table className="data-table"><thead><tr><th>Class</th><th>Sections</th></tr></thead><tbody>{cs.map(c=><tr key={c.id}><td>{c.name}</td><td>{ss.filter(s=>s.class_id===c.id).map(s=>s.name).join(", ")||"—"}</td></tr>)}</tbody></table></div>
   </div>
-
-  <div className="grid academics-grid">
-   <div className="card">
-    <h2>Classes & Sections</h2>
-
-    <div className="academics-form-row">
-     <input className="academics-grow" placeholder="New class" value={cn} onChange={e=>setCn(e.target.value)} />
-     <button className="button" onClick={addClass}>Add Class</button>
-    </div>
-
-    <div className="academics-form-row section-form-row">
-     <select value={cl} onChange={e=>{setCl(e.target.value);setSec("");}}>
-      {cs.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
-     </select>
-     <input className="academics-grow" placeholder="New section" value={sn} onChange={e=>setSn(e.target.value)} />
-     <button className="button" onClick={addSection}>Add Section</button>
-    </div>
-
-    <div className="table-wrap academics-table-wrap">
-     <table className="data-table">
-      <thead><tr><th>Class</th><th>Sections</th></tr></thead>
-      <tbody>{cs.map(c=><tr key={c.id}><td>{c.name}</td><td>{ss.filter(s=>s.class_id===c.id).map(s=>s.name).join(", ")||"—"}</td></tr>)}</tbody>
-     </table>
-    </div>
+  <div className="card academics-card">
+   <h2>Subjects</h2>
+   <div className="academics-form">
+    <div className="academics-field"><label htmlFor="new-subject">New subject</label><input id="new-subject" placeholder="e.g. Computer" value={subn} onChange={e=>setSubn(e.target.value)}/></div>
+    <button className="button academics-action" onClick={addSubject}>+ Add</button>
    </div>
-
-   <div className="card">
-    <h2>Subjects</h2>
-    <div className="academics-form-row">
-     <input className="academics-grow" placeholder="New subject" value={subn} onChange={e=>setSubn(e.target.value)} />
-     <button className="button" onClick={addSubject}>Add</button>
-    </div>
-    <div className="table-wrap academics-table-wrap">
-     <table className="data-table">
-      <thead><tr><th>Subject</th><th>Code</th></tr></thead>
-      <tbody>{subs.map(s=><tr key={s.id}><td>{s.name}</td><td>{s.code||"—"}</td></tr>)}</tbody>
-     </table>
-    </div>
-   </div>
+   <div className="table-wrap academics-table-wrap"><table className="data-table"><thead><tr><th>Subject</th><th>Code</th></tr></thead><tbody>{subs.map(s=><tr key={s.id}><td>{s.name}</td><td>{s.code||"—"}</td></tr>)}</tbody></table></div>
   </div>
-
-  <div className="card academics-assignment-card">
-   <h2>Teacher Assignments</h2>
-   <div className="academics-assignment-form">
-    <select value={teacher} onChange={e=>setTeacher(e.target.value)}>
-     {p.teachers.map(t=><option key={t.id} value={t.id}>{t.name}{t.employee_no?" ("+t.employee_no+")":""}</option>)}
-    </select>
-    <select value={cl} onChange={e=>{setCl(e.target.value);setSec("");}}>
-     {cs.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
-    </select>
-    <select value={sec} onChange={e=>setSec(e.target.value)}>
-     <option value="">All sections</option>
-     {ss.filter(s=>s.class_id===cl).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
-    </select>
-    <select value={subject} onChange={e=>setSubject(e.target.value)}>
-     {subs.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
-    </select>
-    <button className="button" onClick={addAssignment}>Assign Teacher</button>
-   </div>
-   <div className="table-wrap academics-table-wrap">
-    <table className="data-table">
-     <thead><tr><th>Teacher</th><th>Class</th><th>Section</th><th>Subject</th></tr></thead>
-     <tbody>{as.map(a=><tr key={a.id}><td>{nm(a.staff_id,p.teachers)}</td><td>{nm(a.class_id,cs)}</td><td>{a.section_id?nm(a.section_id,ss):"All"}</td><td>{nm(a.subject_id,subs)}</td></tr>)}</tbody>
-    </table>
-   </div>
+ </div>
+ <div className="card academics-card academics-assignments-card">
+  <h2>Teacher Assignments</h2>
+  <div className="academics-assignment-form">
+   <div className="academics-field"><label htmlFor="assignment-teacher">Teacher</label><select id="assignment-teacher" value={teacher} onChange={e=>setTeacher(e.target.value)}>{p.teachers.map(t=><option key={t.id} value={t.id}>{t.name}{t.employee_no?" ("+t.employee_no+")":""}</option>)}</select></div>
+   <div className="academics-field"><label htmlFor="assignment-class">Class</label><select id="assignment-class" value={cl} onChange={e=>setCl(e.target.value)}>{cs.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+   <div className="academics-field"><label htmlFor="assignment-section">Section</label><select id="assignment-section" value={sec} onChange={e=>setSec(e.target.value)}><option value="">All sections</option>{ss.filter(s=>s.class_id===cl).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+   <div className="academics-field"><label htmlFor="assignment-subject">Subject</label><select id="assignment-subject" value={subject} onChange={e=>setSubject(e.target.value)}>{subs.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+   <button className="button academics-action" onClick={addAssignment}>Assign Teacher</button>
   </div>
+  <div className="table-wrap academics-table-wrap"><table className="data-table"><thead><tr><th>Teacher</th><th>Class</th><th>Section</th><th>Subject</th></tr></thead><tbody>{as.map(a=><tr key={a.id}><td>{nm(a.staff_id,p.teachers)}</td><td>{nm(a.class_id,cs)}</td><td>{a.section_id?nm(a.section_id,ss):"All"}</td><td>{nm(a.subject_id,subs)}</td></tr>)}</tbody></table></div>
+ </div>
  </div>;
 }
