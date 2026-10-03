@@ -59,7 +59,7 @@ export default async function ParentsPage() {
       </aside>
       <main className="main">
         <header className="top"><strong>{school?.name ?? "School"}</strong><span className="muted">Parents</span></header>
-        <section className="content">
+        <section className="content parents-page">
           <div className="hero">
             <div><h1>Parents & Guardians</h1><p className="muted">Parent directory with linked children.</p></div>
             <span className="badge">Live · Supabase</span>
