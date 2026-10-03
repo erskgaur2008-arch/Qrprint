@@ -23,6 +23,8 @@ export default async function DashboardPage() {
   const { data: roleRow } = await supabase.from("user_roles").select("role_id").eq("school_id", schoolId).eq("user_id", claims.sub).limit(1).maybeSingle();
   const { data: role } = roleRow?.role_id ? await supabase.from("roles").select("name").eq("id", roleRow.role_id).maybeSingle() : { data: null };
   if (role?.name === "teacher" || role?.name === "staff") redirect("/dashboard/teacher");
+  if (role?.name === "parent") redirect("/dashboard/parent");
+  if (role?.name === "student") redirect("/dashboard/student");
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 
   const [schoolResult, studentsResult, staffResult, attendanceResult, feeResult, paymentResult, activityResult] = await Promise.all([
