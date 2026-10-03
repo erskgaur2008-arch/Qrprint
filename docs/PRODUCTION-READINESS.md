@@ -7,6 +7,7 @@ Status: in progress. This document tracks observed implementation gaps; it is no
 - The application uses Next.js 16, React 19, Supabase SSR and Supabase Auth.
 - `proxy.ts` refreshes auth claims but does not itself enforce route authorization.
 - The dashboard resolves an active `school_users` membership and uses its `school_id` for dashboard queries.
+- The inspected `school_users_access` RLS policy allowed a user's own membership row to satisfy `USING`, while its `WITH CHECK` did not bind the resulting `user_id` to the caller. A corrective migration now splits read and write policies so membership writes require school-admin or platform-admin authority. This migration is committed to the feature branch only and has not been applied to production.
 - `hooks/use-school.ts` currently returns a hard-coded demo school name and address. Do not use it as tenant authority.
 - The project includes feature routes for students, staff, admissions, attendance, fees, academics, timetable, homework, exams, notices, communication, reports, leave, users and settings.
 - The linked Vercel account currently returns no projects through the connected project listing. Deployment linkage must be verified before claiming an update is live.
@@ -43,7 +44,8 @@ Status: in progress. This document tracks observed implementation gaps; it is no
 
 ## Immediate next implementation work
 
-1. Replace any hard-coded demo tenant context with an authenticated membership-backed server-side tenant resolver.
-2. Add a school onboarding request workflow that does not grant tenant-admin privileges until an authorized approval/provisioning step.
-3. Add automated cross-tenant authorization tests and a release checklist.
-4. Resolve security advisor findings with function-specific least-privilege grants and regression tests.
+1. Review and test the new `school_users` membership-write policy migration in an isolated database before any production application.
+2. Replace any hard-coded demo tenant context with an authenticated membership-backed server-side tenant resolver.
+3. Add a school onboarding request workflow that does not grant tenant-admin privileges until an authorized approval/provisioning step.
+4. Add automated cross-tenant authorization tests and a release checklist.
+5. Resolve security advisor findings with function-specific least-privilege grants and regression tests.
