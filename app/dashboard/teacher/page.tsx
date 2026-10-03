@@ -41,8 +41,8 @@ export default async function TeacherDashboardPage() {
   const nav=[["My Dashboard","/dashboard/teacher"],["My Classes","/dashboard/academics"],["Attendance","/dashboard/teacher/attendance"],["Homework","/dashboard/homework"],["Exams & Results","/dashboard/exams"],["Timetable","/dashboard/timetable"],["Leave","/dashboard/leave"],["Communication","/dashboard/communication"]];
   return <div className="shell">
     <aside className="sidebar"><div className="brand">🎓 SchoolConnect</div><div className="nav">{nav.map(([n,h],i)=><Link className={i===0?"active":""} href={h} key={n}>{n}</Link>)}</div></aside>
-    <main className="main"><header className="top"><strong>{schoolResult.data?.name??"School"}</strong><span className="muted">{role.description??role.name} · {membership.display_name??"User"}</span></header>
-      <section className="content">
+    <main className="main teacher-page"><header className="top"><strong>{schoolResult.data?.name??"School"}</strong><span className="muted">{role.description??role.name} · {membership.display_name??"User"}</span></header>
+      <section className="content teacher-page">
         <div className="hero"><div><h1>Welcome, {staff?.name??membership.display_name??"Teacher"}</h1><p className="muted">Your role-based teaching workspace.</p></div><span className="badge">Live · Supabase</span></div>
         <div className="cards">
           <div className="card"><div className="label">Assigned Classes</div><div className="value">{classIds.length}</div></div>
