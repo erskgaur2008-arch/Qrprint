@@ -96,3 +96,29 @@
  .academics-summary .card{display:flex;align-items:center;justify-content:space-between}
  .academics-summary .value{margin-top:0}
 }
+/* Teachers & Staff mobile layout */
+.staff-page{width:100%;min-width:0}
+.staff-page .staff-summary{grid-template-columns:repeat(4,minmax(0,1fr))}
+.staff-page .staff-form-card,.staff-page .staff-directory-card{min-width:0;overflow:hidden}
+.staff-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.staff-toolbar input,.staff-toolbar select{min-height:44px;padding:10px 12px;border:1px solid #d9e0e8;border-radius:10px;background:#fff;min-width:0}
+.staff-toolbar input{flex:1 1 240px}
+.staff-actions{display:flex;gap:8px;flex-wrap:wrap}
+.staff-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.staff-table-wrap .data-table{min-width:850px}
+@media(max-width:700px){
+ .staff-page .staff-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .staff-page .staff-form-card,.staff-page .staff-directory-card{padding:15px}
+ .staff-page .hero{margin-bottom:14px}
+ .staff-page .hero h2{font-size:21px}
+ .staff-toolbar{display:grid;grid-template-columns:1fr;align-items:stretch}
+ .staff-toolbar input,.staff-toolbar select{width:100%;font-size:16px}
+ .staff-actions{display:grid;grid-template-columns:1fr}
+ .staff-actions .button{width:100%;min-height:44px}
+ .staff-page .data-table{min-width:850px}
+}
+@media(max-width:380px){
+ .staff-page .staff-summary{grid-template-columns:1fr}
+ .staff-page .staff-summary .card{display:flex;align-items:center;justify-content:space-between}
+ .staff-page .staff-summary .value{margin-top:0}
+}
