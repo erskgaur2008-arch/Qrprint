@@ -106,7 +106,7 @@ export default async function FeesPage() {
           <span className="muted">Fees & Payments</span>
         </header>
 
-        <section className="content">
+        <section className="content fees-page">
           <div className="hero">
             <div>
               <h1>Fees & Payments</h1>
