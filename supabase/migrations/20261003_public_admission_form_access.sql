@@ -1,0 +1,5 @@
+alter table public.admission_enquiries alter column enquiry_no set default('ENQ-'||upper(substr(replace(gen_random_uuid()::text,'-',''),1,8)));
+revoke all on public.admission_enquiries from anon;grant insert on public.admission_enquiries to anon;
+drop policy if exists public_admission_insert on public.admission_enquiries;
+create policy public_admission_insert on public.admission_enquiries for insert to anon,authenticated with check(exists(select 1 from public.schools s where s.id=school_id and s.status='active') and length(trim(student_name)) between 2 and 120 and(parent_phone is null or length(trim(parent_phone)) between 7 and 30));
+grant select(id,name,slug,status) on public.schools to anon;drop policy if exists public_school_directory on public.schools;create policy public_school_directory on public.schools for select to anon using(status='active');
