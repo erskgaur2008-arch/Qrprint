@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import StudentLoginManager from "@/components/student-login-manager";
 
 export default async function StudentsPage() {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ export default async function StudentsPage() {
   const { data: school } = await supabase.from("schools").select("name").eq("id", membership.school_id).single();
   const { data: students } = await supabase
     .from("students")
-    .select("id, student_id, admission_no, name, date_of_birth, gender, blood_group, class_id, section_id, class_name, section, roll_no, admission_date, status")
+    .select("id, user_id, student_id, admission_no, name, date_of_birth, gender, blood_group, class_id, section_id, class_name, section, roll_no, admission_date, status")
     .eq("school_id", membership.school_id)
     .order("name");
   const [{ data: classRows }, { data: sectionRows }] = await Promise.all([
@@ -67,7 +68,7 @@ export default async function StudentsPage() {
             <h2>Student Directory</h2>
             {(students ?? []).length === 0 ? <p className="muted">No students found.</p> : (
               <table className="data-table">
-                <thead><tr><th>Student</th><th>Admission No.</th><th>Class</th><th>Roll No.</th><th>DOB</th><th>Gender</th><th>Status</th></tr></thead>
+                <thead><tr><th>Student</th><th>Admission No.</th><th>Class</th><th>Roll No.</th><th>DOB</th><th>Gender</th><th>Status</th><th>Login</th></tr></thead>
                 <tbody>
                   {(students ?? []).map(student => (
                     <tr key={student.id}>
@@ -77,7 +78,7 @@ export default async function StudentsPage() {
                       <td>{student.roll_no ?? "—"}</td>
                       <td>{student.date_of_birth ?? "—"}</td>
                       <td>{student.gender ?? "—"}</td>
-                      <td><span className="badge">{student.status}</span></td>
+                      <td><span className="badge">{student.status}</span></td><td><StudentLoginManager studentId={student.id} studentName={student.name} currentLogin={!!student.user_id} /></td>
                     </tr>
                   ))}
                 </tbody>
