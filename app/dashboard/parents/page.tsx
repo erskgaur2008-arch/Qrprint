@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import ParentLoginManager from "@/components/parent-login-manager";
 
 export default async function ParentsPage() {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ export default async function ParentsPage() {
   const { data: school } = await supabase.from("schools").select("name").eq("id", membership.school_id).single();
   const { data: parents } = await supabase
     .from("parents")
-    .select("id, name, phone, email, address")
+    .select("id, name, phone, email, address, user_id")
     .eq("school_id", membership.school_id)
     .order("name");
 
@@ -74,7 +75,7 @@ export default async function ParentsPage() {
             <h2>Parent Directory</h2>
             {(parents ?? []).length === 0 ? <p className="muted">No parents found.</p> : (
               <table className="data-table">
-                <thead><tr><th>Parent / Guardian</th><th>Phone</th><th>Email</th><th>Children</th><th>Address</th></tr></thead>
+                <thead><tr><th>Parent / Guardian</th><th>Phone</th><th>Email</th><th>Children</th><th>Address</th><th>Login</th></tr></thead>
                 <tbody>
                   {(parents ?? []).map(parent => (
                     <tr key={parent.id}>
@@ -82,7 +83,7 @@ export default async function ParentsPage() {
                       <td>{parent.phone ?? "—"}</td>
                       <td>{parent.email ?? "—"}</td>
                       <td>{(childrenMap.get(parent.id) ?? []).join(", ") || "—"}</td>
-                      <td>{parent.address ?? "—"}</td>
+                      <td>{parent.address ?? "—"}</td><td><ParentLoginManager parentId={parent.id} parentName={parent.name} currentEmail={parent.email} hasLogin={!!parent.user_id} /></td>
                     </tr>
                   ))}
                 </tbody>
