@@ -49,7 +49,7 @@ export default async function StudentsPage() {
           <strong>{school?.name ?? "School"}</strong>
           <span className="muted">Students</span>
         </header>
-        <section className="content">
+        <section className="content students-page">
           <div className="hero">
             <div>
               <h1>Students</h1>
