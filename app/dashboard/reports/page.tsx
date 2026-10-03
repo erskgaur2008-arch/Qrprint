@@ -85,7 +85,7 @@ export default async function ReportsPage() {
   return <div className="shell">
     <aside className="sidebar"><div className="brand">🎓 SchoolConnect</div><div className="nav">{nav.map(([name,href])=><a key={name} className={name==="Reports"?"active":""} href={href}>{name}</a>)}</div></aside>
     <main className="main"><header className="top"><strong>{schoolResult.data?.name??"School"}</strong><span className="muted">School Admin · {membership.display_name??"Admin"}</span></header>
-      <section className="content"><div className="hero"><div><h1>Reports</h1><p className="muted">Live student, attendance, fee, admission, exam and staff reports.</p></div><span className="badge">Live · Supabase</span></div>
+      <section className="content reports-page"><div className="hero"><div><h1>Reports</h1><p className="muted">Live student, attendance, fee, admission, exam and staff reports.</p></div><span className="badge">Live · Supabase</span></div>
         <ReportsClient
           summary={{students:students.length,staff:staff.length,parents:parents.length,attendance:attendance.length,attendancePresent:presentCount,billed:totalBilled,paid:totalPaid,pending:Math.max(0,totalBilled-totalPaid),enquiries:enquiries.length,applications:applications.length,marks:marks.length}}
           students={studentRows} attendance={attendanceRows} fees={feeRows} admissions={admissionRows} exams={examRows} staff={staffRows}
