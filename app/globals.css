@@ -165,3 +165,15 @@
  .admissions-page .cards .value,.fees-page .cards .value,.reports-page .cards .value{margin-top:0}
  .reports-page .report-actions{grid-template-columns:1fr}
 }
+/* Final module mobile pass */
+.homework-page,.exams-page,.timetable-page,.leave-page,.communication-page,.teacher-page{width:100%;min-width:0;overflow:hidden}
+.homework-page .data-table,.exams-page .data-table,.timetable-page .data-table,.leave-page .data-table,.communication-page .data-table,.teacher-page .data-table{max-width:100%}
+@media(max-width:700px){
+ .homework-page .hero,.exams-page .hero,.timetable-page .hero,.leave-page .hero,.communication-page .hero,.teacher-page .hero{align-items:flex-start;flex-direction:column;gap:10px}
+ .homework-page .hero h1,.exams-page .hero h1,.timetable-page .hero h1,.leave-page .hero h1,.communication-page .hero h1,.teacher-page .hero h1{font-size:28px}
+ .homework-page .card,.exams-page .card,.timetable-page .card,.leave-page .card,.communication-page .card,.teacher-page .card{min-width:0}
+ .homework-page input,.homework-page select,.homework-page textarea,.exams-page input,.exams-page select,.exams-page textarea,.timetable-page input,.timetable-page select,.timetable-page textarea,.leave-page input,.leave-page select,.leave-page textarea,.communication-page input,.communication-page select,.communication-page textarea,.teacher-page input,.teacher-page select,.teacher-page textarea{font-size:16px;max-width:100%;min-height:44px}
+ .homework-page .data-table,.exams-page .data-table,.timetable-page .data-table,.leave-page .data-table,.communication-page .data-table,.teacher-page .data-table{min-width:680px}
+ .homework-page .form-grid,.exams-page .form-grid,.timetable-page .form-grid,.leave-page .form-grid,.communication-page .form-grid,.teacher-page .form-grid{grid-template-columns:1fr}
+ .homework-page .button,.exams-page .button,.timetable-page .button,.leave-page .button,.communication-page .button,.teacher-page .button{min-height:44px}
+}
