@@ -21,7 +21,7 @@ export default function Home() {
             <p>SchoolConnect brings everyday school administration into one workspace—from student records and attendance to fees, academics and communication.</p>
             <div className="landing-actions">
               <Link className="landing-button primary" href="/login">School Admin Login</Link>
-              <Link className="landing-button secondary" href="/teacher-login">Teacher Login</Link>
+              <Link className="landing-button secondary" href="/teacher-login">Teacher Login</Link><Link className="landing-button secondary" href="/parent-login">Parent Login</Link><Link className="landing-button secondary" href="/student-login">Student Login</Link>
             </div>
           </div>
           <div className="landing-card">
