@@ -26,7 +26,7 @@ export default async function Page() {
 
   return <div className="shell"><aside className="sidebar"><div className="brand">🎓 SchoolConnect</div><div className="nav">{nav.map(([n,h])=><a className={n==="Exams & Results"?"active":""} href={h} key={n}>{n}</a>)}</div></aside>
     <main className="main"><header className="top"><strong>{school?.name ?? "School"}</strong><span className="muted">School Admin · {membership.display_name ?? "Admin"}</span></header>
-      <section className="content"><div className="hero"><div><h1>Exams & Results</h1><p className="muted">Create exams, schedule subjects, enter marks and generate report-card summaries.</p></div><span className="badge">Live · Supabase</span></div>
+      <section className="content exams-page"><div className="hero"><div><h1>Exams & Results</h1><p className="muted">Create exams, schedule subjects, enter marks and generate report-card summaries.</p></div><span className="badge">Live · Supabase</span></div>
         <ExamsClient schoolId={schoolId} userId={userId} exams={exams||[]} schedules={schedules||[]} classes={classes||[]} sections={sections||[]} subjects={subjects||[]} students={students||[]} marks={marks||[]} />
       </section>
     </main></div>;
