@@ -152,7 +152,7 @@
  .admissions-page .data-table,.fees-page .data-table,.reports-page .data-table{min-width:720px}
  .admissions-page [style*="grid-template-columns:repeat(2,1fr)"]{grid-template-columns:1fr!important}
  .admissions-page [style*="minWidth:220px"]{width:100%;min-width:0!important}
- .admissions-page [style*="justifyContent:"space-between""]{align-items:stretch}
+ .admissions-page [style*="justifyContent"]{align-items:stretch}
  .fees-page .cards,.reports-page .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
  .reports-page .report-toolbar{display:grid;grid-template-columns:1fr;align-items:stretch}
  .reports-page .report-toolbar>div,.reports-page .report-toolbar>label{width:100%;min-width:0}
