@@ -122,3 +122,20 @@
  .staff-page .staff-summary .card{display:flex;align-items:center;justify-content:space-between}
  .staff-page .staff-summary .value{margin-top:0}
 }
+/* Students & Parents mobile pass */
+.students-page,.parents-page{width:100%;min-width:0;overflow:hidden}
+.students-page .cards,.parents-page .cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+.students-page .directory-card,.parents-page .directory-card{min-width:0;overflow:hidden}
+.students-page .data-table,.parents-page .data-table{min-width:760px}
+@media(max-width:700px){
+ .students-page .cards,.parents-page .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .students-page .card,.parents-page .card{padding:15px}
+ .students-page .hero,.parents-page .hero{align-items:flex-start}
+ .students-page .hero h1,.parents-page .hero h1{font-size:28px}
+ .students-page .data-table,.parents-page .data-table{min-width:720px}
+}
+@media(max-width:380px){
+ .students-page .cards,.parents-page .cards{grid-template-columns:1fr}
+ .students-page .cards .card,.parents-page .cards .card{display:flex;align-items:center;justify-content:space-between}
+ .students-page .cards .value,.parents-page .cards .value{margin-top:0}
+}
