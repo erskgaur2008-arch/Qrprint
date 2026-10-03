@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "SchoolConnect",
+    "slug": "schoolconnect",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": { "backgroundColor": "#F7F9FC" },
+    "android": { "package": "com.schoolconnect.crm" },
+    "ios": { "bundleIdentifier": "com.schoolconnect.crm" }
+  }
+}
